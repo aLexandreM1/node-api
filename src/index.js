@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -6,6 +7,8 @@ app.get('/', (req, res) => {
   res.send('OK')
 })
 
-app.listen(6767)
+app.use(bodyParser.json())
 
-module.exports = express.json()
+require('./presentation/routers/user-route')(app)
+
+app.listen(6767)
