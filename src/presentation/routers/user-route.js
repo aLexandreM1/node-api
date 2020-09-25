@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
 
     return res.send({ user })
   } catch (err) {
-    return res.status(400).send({ error: 'Registration Failed' })
+    return res.status(400).send({ error: 'Registration Failed!', err })
   }
 })
 

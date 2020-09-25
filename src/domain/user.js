@@ -1,7 +1,7 @@
 const mongoose = require('../infra/repository/user-auth-repository')
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  nome: {
     type: String,
     require: true,
     lowercase: true
@@ -12,15 +12,15 @@ const UserSchema = new mongoose.Schema({
     required: true,
     lowercase: true
   },
-  password: {
+  senha: {
     type: String,
     required: true,
     select: false
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+  telefones: [{
+    numero: { type: String, required: true },
+    ddd: { type: String, required: true }
+  }]
 })
 
 const User = mongoose.model('User', UserSchema)
