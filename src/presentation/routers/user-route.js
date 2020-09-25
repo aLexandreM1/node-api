@@ -1,16 +1,15 @@
-const express = require('express')
 const User = require('../../domain/user')
 
-const router = express.Router()
+class Register {
+  async addUser (req, res) {
+    try {
+      const user = await User.create(req.body)
 
-router.post('/register', async (req, res) => {
-  try {
-    const user = await User.create(req.body)
-
-    return res.send({ user })
-  } catch (err) {
-    return res.status(400).send({ error: 'Registration Failed!', err })
+      return res.json({ user })
+    } catch (err) {
+      return res.status(400).json({ error: 'Registration Failed!', err })
+    }
   }
-})
+}
 
-module.exports = app => app.use('/auth', router)
+module.exports = Register

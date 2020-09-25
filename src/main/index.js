@@ -1,13 +1,8 @@
 const express = require('express')
-
+const routes = require('../main/config/routes')
 const app = express()
 
-app.get('/', (req, res) => {
-  res.json({ Response: 'OK' })
-})
-
 app.use(express.json())
-
-require('../presentation/routers/user-route')(app)
+app.use(routes)
 
 app.listen(6767)
