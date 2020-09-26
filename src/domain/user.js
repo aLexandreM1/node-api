@@ -20,7 +20,27 @@ const UserSchema = new mongoose.Schema({
   telefones: [{
     numero: { type: String, required: true },
     ddd: { type: String, required: true }
-  }]
+  }],
+  data_criacao:
+  {
+    type: Date,
+    default: Date.now
+  },
+  data_atualizacao:
+  {
+    type: Date,
+    default: Date.now
+  },
+  ultimo_login:
+  {
+    type: Date,
+    default: Date.now
+  },
+  token:
+  {
+    type: String,
+    default: 'abcdefhash'
+  }
 })
 
 const User = mongoose.model('User', UserSchema)
