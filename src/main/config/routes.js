@@ -1,10 +1,10 @@
 const express = require('express')
-const FindUser = require('../../presentation/controllers/user-route')
+const UserController = require('../../presentation/controllers/user-controller')
 const Auth = require('../../presentation/controllers/auth')
 const Valitador = require('../../middlewares/interceptors')
 const router = express.Router()
 const validator = new Valitador()
-const findUser = new FindUser()
+const userController = new UserController()
 const auth = new Auth()
 
 router.get('/', (req, res) => {
@@ -25,6 +25,6 @@ router.post('/sign-up',
 
 router.get('/find/:id',
   validator.validateUserToken,
-  findUser.ensureToken)
+  userController.findUser)
 
 module.exports = router
