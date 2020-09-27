@@ -23,7 +23,7 @@ router.post('/sign-up',
   validator.validatePhone,
   auth.signUp)
 
-router.post('/find',
+router.get('/find/:id',
   validator.validateUserToken,
   findUser.ensureToken)
 

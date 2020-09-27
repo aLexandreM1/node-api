@@ -18,7 +18,7 @@ class Auth {
         return res.status(401).json(new InvalidParamError('Usuário e/ou senha inválidos'))
       }
       senha = user.senha
-      token = jwt.sign({ email, senha }, process.env.ACCESS_TOKEN_SECRET)
+      token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 30 })
       const updatedUser = await User.findOneAndUpdate(find,
         {
           token: token,
