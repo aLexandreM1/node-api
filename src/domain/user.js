@@ -1,4 +1,4 @@
-const mongoose = require('../infra/repository/user-auth-repository')
+const mongoose = require('../infra/repository/repository')
 
 const UserSchema = new mongoose.Schema({
   nome: {
