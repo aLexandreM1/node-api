@@ -1,4 +1,7 @@
 const MissingParamError = require('../utils/missing-param-error')
+const InvalidSessionError = require('../utils/invalid-session-error')
+const User = require('../domain/user')
+const jwt = require('jsonwebtoken')
 
 class Validator {
   validateName (req, res, next) {
@@ -50,15 +53,24 @@ class Validator {
     next()
   }
 
-  validateUserToken (req, res, next) {
+  async validateUserToken (req, res, next) {
     const brearerHeader = req.headers.authorization
-    if (typeof brearerHeader !== 'undefined') {
+    if (brearerHeader !== undefined) {
       const bearer = brearerHeader.split(' ')
       const bearerToken = bearer[1]
-      req.token = bearerToken
-      next()
-    } else {
-      res.status(401).json(new Error('Unauthorized!'))
+      try {
+        const verify = jwt.verify(bearerToken, process.env.ACCESS_TOKEN_SECRET)
+        const user = await User.findOne({ email: verify.email })
+        if (user.token === bearerToken) {
+          next()
+        }
+      } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+          return res.status(401).json(new InvalidSessionError(bearerToken))
+        }
+        console.log(err)
+        next()
+      }
     }
   }
 }
