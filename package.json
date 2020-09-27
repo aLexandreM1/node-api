@@ -4,12 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest", 
+    "test-watch": "jest --watchAll"
+  },
+  "lint-staged":{
+    "*.js":[
+      "standard --fix",
+      "git add"
+    ]
+  },
+  "husky":{
+    "hooks":{
+      "pre-commit": "lint-staged"
+    }
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^4.3.0",
     "jest": "^26.4.2",
+    "lint-staged": "^10.4.0",
     "standard": "^14.3.4"
   },
   "dependencies": {
