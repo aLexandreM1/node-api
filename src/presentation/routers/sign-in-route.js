@@ -1,6 +1,5 @@
 require('dotenv').config()
 const User = require('../../domain/user')
-const InvalidParamError = require('../../utils/invalid-param-error')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Validator = require('../../utils/validator')
