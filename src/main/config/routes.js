@@ -1,11 +1,11 @@
 const express = require('express')
-const Register = require('../../presentation/routers/user-route')
+const SignUp = require('../../presentation/routers/sign-up-route')
 const router = express.Router()
 
 router.get('/', (req, res) => {
   res.json({ Response: 'OK' })
 })
 
-router.post('/register', new Register().addUser)
+router.post('/sign-up', new SignUp().addUser)
 
 module.exports = router
