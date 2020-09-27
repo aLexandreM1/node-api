@@ -1,6 +1,6 @@
 const express = require('express')
-const SignUp = require('../../presentation/routers/sign-up-route')
-const SignIn = require('../../presentation/routers/sign-in-route')
+const SignUp = require('../../presentation/controllers/sign-up-route')
+const SignIn = require('../../presentation/controllers/sign-in-route')
 const router = express.Router()
 
 router.get('/', (req, res) => {
