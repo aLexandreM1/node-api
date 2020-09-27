@@ -1,14 +1,30 @@
 const express = require('express')
-const SignUp = require('../../presentation/controllers/sign-up-route')
-const SignIn = require('../../presentation/controllers/sign-in-route')
+const FindUser = require('../../presentation/controllers/user-route')
+const Auth = require('../../presentation/controllers/auth')
+const Valitador = require('../../middlewares/interceptors')
 const router = express.Router()
+const validator = new Valitador()
+const findUser = new FindUser()
+const auth = new Auth()
 
 router.get('/', (req, res) => {
   res.json({ Response: 'OK' })
 })
 
-router.post('/sign-in', new SignIn().verifyUser)
+router.post('/sign-in',
+  validator.validateEmail,
+  validator.validatePassword,
+  auth.signIn)
 
-router.post('/sign-up', new SignUp().addUser)
+router.post('/sign-up',
+  validator.validateName,
+  validator.validateEmail,
+  validator.validatePassword,
+  validator.validatePhone,
+  auth.signUp)
+
+router.post('/find',
+  validator.validateUserToken,
+  findUser.ensureToken)
 
 module.exports = router

@@ -1,25 +1,32 @@
 const MissingParamError = require('../utils/missing-param-error')
 
 class Validator {
-  validateName (res, name) {
-    if (!name) {
+  validateName (req, res, next) {
+    const { nome } = req.body
+    if (!nome) {
       return res.status(400).json(new MissingParamError('nome'))
     }
+    next()
   }
 
-  validateEmail (res, email) {
+  validateEmail (req, res, next) {
+    const { email } = req.body
     if (!email) {
       return res.status(400).json(new MissingParamError('email'))
     }
+    next()
   }
 
-  validatePassword (res, senha) {
+  validatePassword (req, res, next) {
+    const { senha } = req.body
     if (!senha) {
       return res.status(400).json(new MissingParamError('senha'))
     }
+    next()
   }
 
-  validatePhone (res, telefones) {
+  validatePhone (req, res, next) {
+    const { telefones } = req.body
     let missingNumber = null
     let missingDdd = null
 
@@ -39,6 +46,19 @@ class Validator {
     }
     if (missingNumber) {
       return res.status(400).json(new MissingParamError('telefones sem ddd'))
+    }
+    next()
+  }
+
+  validateUserToken (req, res, next) {
+    const brearerHeader = req.headers.authorization
+    if (typeof brearerHeader !== 'undefined') {
+      const bearer = brearerHeader.split(' ')
+      const bearerToken = bearer[1]
+      req.token = bearerToken
+      next()
+    } else {
+      res.status(401).json(new Error('Unauthorized!'))
     }
   }
 }
