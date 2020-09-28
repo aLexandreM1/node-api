@@ -1,5 +1,6 @@
 const MissingParamError = require('../utils/missing-param-error')
 const InvalidSessionError = require('../utils/invalid-session-error')
+const InvalidParamError = require('../utils/invalid-param-error')
 const User = require('../domain/user')
 const jwt = require('jsonwebtoken')
 
@@ -68,8 +69,11 @@ class Validator {
         if (err.name === 'TokenExpiredError') {
           return res.status(401).json(new InvalidSessionError(bearerToken))
         }
+        if (err.name === 'JsonWebTokenError') {
+          return res.status(400).json(new InvalidParamError(bearerToken))
+        }
         console.log(err)
-        next()
+        return res.status(500).json(new Error('Internal Server Error'))
       }
     }
   }
