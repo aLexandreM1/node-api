@@ -1,13 +1,14 @@
 const User = require('../../domain/user')
 const InvalidParamError = require('../../utils/invalid-param-error')
 const InternalServerError = require('../../utils/internal-server-error')
+const mongoose = require('mongoose')
 
 const projection = { senha: 0, __v: 0 }
 
 class UserController {
   async findUser (req, res, next) {
     try {
-      if (req.params.id.length < 24) {
+      if (mongoose.isValidObjectId(req.params.id)) {
         return res.status(400).json(new InvalidParamError('id'))
       }
       const user = await User.findById(req.params.id, projection)

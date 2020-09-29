@@ -30,53 +30,59 @@ class Validator {
     next()
   }
 
-  validatePhone (req, res, next) {
-    const { telefones } = req.body
-    let missingNumber = null
-    let missingDdd = null
+  phoneCheck (telefones) {
+    return telefones.reduce((acc, cur) => {
+      if (!acc) return acc
 
-    if (telefones.length === 0) {
-      return res.status(400).json(new MissingParamError('telefones'))
-    }
-    telefones.forEach(telefone => {
-      if (!telefone.numero) {
-        missingNumber = true
+      if (!cur.ddd || !cur.numero || cur.ddd.length !== 2 || cur.numero.length !== 9) {
+        return false
       }
-      if (!telefone.ddd) {
-        missingDdd = true
-      }
-    })
-    if (missingDdd) {
-      return res.status(400).json(new MissingParamError('telefones sem número'))
-    }
-    if (missingNumber) {
-      return res.status(400).json(new MissingParamError('telefones sem ddd'))
-    }
-    next()
+      return acc
+    }, true)
   }
 
   async validateUserToken (req, res, next) {
     const brearerHeader = req.headers.authorization
-    if (brearerHeader !== undefined) {
-      const bearer = brearerHeader.split(' ')
-      const bearerToken = bearer[1]
-      try {
-        const verify = jwt.verify(bearerToken, process.env.ACCESS_TOKEN_SECRET)
-        const user = await User.findOne({ email: verify.email })
-        if (user.token === bearerToken) {
-          next()
-        }
-      } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-          return res.status(401).json(new InvalidSessionError(bearerToken))
-        }
-        if (err.name === 'JsonWebTokenError') {
-          return res.status(400).json(new InvalidParamError('Token'))
-        }
-        console.log(err)
-        return res.status(500).json(new InternalServerError())
-      }
+    const bearerToken = this.getBearerToken(brearerHeader)
+    if (!bearerToken) {
+      return res.status(401).json({ mensagem: 'Não autorizado' })
     }
+    try {
+      const verify = jwt.verify(bearerToken, process.env.ACCESS_TOKEN_SECRET)
+      const user = await User.findOne({ email: verify.email })
+      if (user.token === bearerToken) {
+        next()
+      }
+    } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json(new InvalidSessionError(bearerToken))
+      }
+      if (err.name === 'JsonWebTokenError') {
+        return res.status(400).json(new InvalidParamError('Token'))
+      }
+      console.log(err)
+      return res.status(500).json(new InternalServerError())
+    }
+  }
+
+  validatePhone (req, res, next) {
+    const { telefones } = req.body
+
+    if (telefones.length === 0) {
+      return res.status(400).json(new MissingParamError('telefones'))
+    }
+    if (!this.phoneCheck(telefones)) {
+      return res.status(400).json(new MissingParamError('Numero ou DDD faltando'))
+    }
+    next()
+  }
+
+  getBearerToken (bearerHeader) {
+    if (!bearerHeader) return null
+    const bearer = bearerHeader.split(' ')
+    if (bearer.length < 2) return null
+    const bearerToken = bearer[1]
+    return bearerToken
   }
 }
 
