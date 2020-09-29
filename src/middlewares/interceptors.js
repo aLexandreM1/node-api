@@ -5,7 +5,7 @@ const InvalidParamError = require('../utils/invalid-param-error')
 const User = require('../domain/user')
 const jwt = require('jsonwebtoken')
 
-class Validator {
+class Interceptor {
   validateName (req, res, next) {
     const { nome } = req.body
     if (!nome) {
@@ -86,4 +86,4 @@ class Validator {
   }
 }
 
-module.exports = Validator
+module.exports = Interceptor
