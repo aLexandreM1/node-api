@@ -1,9 +1,9 @@
 const express = require('express')
 const UserController = require('../../presentation/controllers/user-controller')
 const Auth = require('../../presentation/controllers/auth')
-const Valitador = require('../../middlewares/interceptors')
+const Interceptor = require('../../middlewares/interceptors')
 const router = express.Router()
-const interceptor = new Valitador()
+const interceptor = new Interceptor()
 const userController = new UserController()
 const auth = new Auth()
 

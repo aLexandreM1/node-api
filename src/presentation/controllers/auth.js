@@ -2,7 +2,8 @@ require('dotenv').config()
 const AlreadyExistsError = require('../../utils/already-exists-error')
 const InvalidParamError = require('../../utils/invalid-param-error')
 const InternalServerError = require('../../utils/internal-server-error')
-const User = require('../../domain/user')
+const UserRepository = require('../../infra/repository/user-repository')
+const userRepository = new UserRepository()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
@@ -14,12 +15,12 @@ class Auth {
     const find = { email }
 
     try {
-      const user = await User.findOne(find).exec()
+      const user = await userRepository.findOne(find).exec()
       if (!user || !await bcrypt.compare(senha, user.senha)) {
         return res.status(401).json(new InvalidParamError('Usuário e/ou senha inválidos'))
       }
       token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 1800 })
-      const updatedUser = await User.findOneAndUpdate(find,
+      const updatedUser = await userRepository.findOneAndUpdate(find,
         {
           token: token,
           data_atualizacao: Date.now(),
@@ -39,11 +40,11 @@ class Auth {
   async signUp (req, res) {
     const { email } = req.body
     try {
-      const user = await User.findOne({ email: email }).exec()
+      const user = await userRepository.findOne({ email: email }).exec()
       if (user) {
         return res.status(409).json(new AlreadyExistsError(email))
       }
-      const newUser = await User.create({
+      const newUser = await userRepository.create({
         ...req.body,
         token: jwt.sign({ email },
           process.env.ACCESS_TOKEN_SECRET)

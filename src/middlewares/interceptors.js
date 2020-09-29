@@ -2,10 +2,37 @@ const MissingParamError = require('../utils/missing-param-error')
 const InvalidSessionError = require('../utils/invalid-session-error')
 const InternalServerError = require('../utils/internal-server-error')
 const InvalidParamError = require('../utils/invalid-param-error')
-const User = require('../domain/user')
+const UserRepository = require('../infra/repository/user-repository')
+const userRepository = new UserRepository()
 const jwt = require('jsonwebtoken')
 
 class Interceptor {
+  constructor () {
+    // solve fcking problems with this pointer
+    this.validateUserToken = this.validateUserToken.bind(this)
+    this.validatePhone = this.validatePhone.bind(this)
+  }
+
+  validatePhone (req, res, next) {
+    const { telefones } = req.body
+
+    if (telefones.length === 0) {
+      return res.status(400).json(new MissingParamError('telefones'))
+    }
+    if (!this.phoneCheck(telefones)) {
+      return res.status(400).json(new MissingParamError('Numero ou DDD faltando'))
+    }
+    next()
+  }
+
+  getBearerToken (bearerHeader) {
+    if (!bearerHeader) return null
+    const bearer = bearerHeader.split(' ')
+    if (bearer.length < 2) return null
+    const bearerToken = bearer[1]
+    return bearerToken
+  }
+
   validateName (req, res, next) {
     const { nome } = req.body
     if (!nome) {
@@ -49,7 +76,7 @@ class Interceptor {
     }
     try {
       const verify = jwt.verify(bearerToken, process.env.ACCESS_TOKEN_SECRET)
-      const user = await User.findOne({ email: verify.email })
+      const user = await userRepository.findOne({ email: verify.email })
       if (user.token === bearerToken) {
         next()
       }
@@ -63,26 +90,6 @@ class Interceptor {
       console.log(err)
       return res.status(500).json(new InternalServerError())
     }
-  }
-
-  validatePhone (req, res, next) {
-    const { telefones } = req.body
-
-    if (telefones.length === 0) {
-      return res.status(400).json(new MissingParamError('telefones'))
-    }
-    if (!this.phoneCheck(telefones)) {
-      return res.status(400).json(new MissingParamError('Numero ou DDD faltando'))
-    }
-    next()
-  }
-
-  getBearerToken (bearerHeader) {
-    if (!bearerHeader) return null
-    const bearer = bearerHeader.split(' ')
-    if (bearer.length < 2) return null
-    const bearerToken = bearer[1]
-    return bearerToken
   }
 }
 
