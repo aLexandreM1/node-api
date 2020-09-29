@@ -1,6 +1,7 @@
 require('dotenv').config()
-const AlreadyExistisError = require('../../utils/already-exists-error')
+const AlreadyExistsError = require('../../utils/already-exists-error')
 const InvalidParamError = require('../../utils/invalid-param-error')
+const InternalServerError = require('../../utils/internal-server-error')
 const User = require('../../domain/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
@@ -17,7 +18,6 @@ class Auth {
       if (!user || !await bcrypt.compare(senha, user.senha)) {
         return res.status(401).json(new InvalidParamError('Usuário e/ou senha inválidos'))
       }
-      senha = user.senha
       token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 1800 })
       const updatedUser = await User.findOneAndUpdate(find,
         {
@@ -32,7 +32,7 @@ class Auth {
       return res.status(200).json(updatedUser)
     } catch (err) {
       console.log(err)
-      return res.status(500).json(new Error('Internal Server Error'))
+      return res.status(500).json(new InternalServerError())
     }
   }
 
@@ -41,7 +41,7 @@ class Auth {
     try {
       const user = await User.findOne({ email: email }).exec()
       if (user) {
-        return res.status(409).json(new AlreadyExistisError(email))
+        return res.status(409).json(new AlreadyExistsError(email))
       }
       const newUser = await User.create({
         ...req.body,
@@ -58,7 +58,7 @@ class Auth {
       })
     } catch (err) {
       console.log(err)
-      return res.status(500).json(new Error('Internal Server Error'))
+      return res.status(500).json(new InternalServerError())
     }
   }
 }
