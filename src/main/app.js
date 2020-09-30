@@ -4,7 +4,7 @@ const routes = require('./config/routes')
 
 const app = express()
 
-mongoose.connect('mongodb://localhost/nodedb', {
+mongoose.connect(process.env.MONGO, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false

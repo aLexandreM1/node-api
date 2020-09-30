@@ -5,12 +5,12 @@ WORKDIR /usr/src/app
 ENV NODE_ENV production
 
 # Install Node.js dependencies
-COPY package*.json /usr/src/app/
+COPY package*.json ./
 RUN npm install
 
 # Copy Node.js files
-COPY * /usr/src/
+COPY . ./
 
 # Expose port 8080 and start Node.js server
 EXPOSE 8080
-CMD ["npm", "src/main/index.js"]
+CMD ["node", "src/main/index.js"]
