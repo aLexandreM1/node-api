@@ -15,7 +15,7 @@ class Auth {
     const find = { email }
 
     try {
-      const user = await userRepository.findOne(find).exec()
+      const user = await userRepository.findOne(find)
       if (!user || !await bcrypt.compare(senha, user.senha)) {
         return res.status(401).json(new InvalidParamError('Usuário e/ou senha inválidos'))
       }
@@ -40,7 +40,7 @@ class Auth {
   async signUp (req, res) {
     const { email } = req.body
     try {
-      const user = await userRepository.findOne({ email: email }).exec()
+      const user = await userRepository.findOne({ email: email })
       if (user) {
         return res.status(409).json(new AlreadyExistsError(email))
       }
