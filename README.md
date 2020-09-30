@@ -1,129 +1,77 @@
-DESAFIO NODE.JS - CONCRETE
+Basic Node.JS Project
 
-Proposta
-
-Crie um aplicativo backend que irá expor uma API RESTful de criação de sing up/sign in.
-Todos os endpoints devem somente aceitar e somente enviar JSONs. O servidor deverá retornar JSON para os casos de endpoint não encontrado também.
-O aplicativo deverá persistir os dados (ver detalhes em requisitos).
-Todas as respostas de erro devem retornar o objeto:
+O aplicativo é backend que expõe uma API RESTful de criação de sing up/sign in.
+Todos os endpoints devem somente aceitar e somente enviar JSONs. 
+O servidor retornar JSON para os casos de endpoint não encontrado também.
+Todas as respostas de erro devem retornam objetos do tipo:
 
     {
-    "mensagem": "mensagem de erro"
+        "mensagem": "mensagem de erro"
     }
 
 Segue a documentação dos endpoints:
 
-Criação de cadastro
+# / [get]
 
-* Este endpoint deverá receber um usuário com os seguintes campos: nome, email, senha e uma lista de objetos telefone. Seguem os modelos:
+Health-check
+
+# /sign-up [post]
+
+Este endpoint deverá receber um usuário com os seguintes campos: nome, email, senha e uma lista de objetos telefone. [Todos Obrigatórios]
 
     {
 
         "nome": "string",
         "email": "string",
-        "senha": "senha",
+        "senha": "string",
         "telefones": [
             {
-            "numero": "123456789",
-            "ddd": "11"
+                "numero": "string",         # [length = 9]
+                "ddd": "string"             # [length = 2]
             }
             ]
     }
 
-* Usar status codes de acordo
-
 * Em caso de sucesso irá retornar um usuário mais os campos:
 
-* id: id do usuário (pode ser o próprio gerado pelo banco, porém seria interessante se fosse um GUID)
+* id: id do usuário (objectId)
 
 * data_criacao: data da criação do usuário
 
 * data_atualizacao: data da última atualização do usuário
 
-* ultimo_login: data do último login (no caso da criação, será a mesma que a criação)
+* ultimo_login: data do último login
 
-* token: token de acesso da API (pode ser um GUID ou um JWT)
+* token: token de acesso da API
 
-* Caso o e-mail já exista, deverá retornar erro com a mensagem "E-mail já existente".
-
-* O token deverá ser persistido junto com o usuário
-
-Sign in
+# /sign-in [post]
 
 * Este endpoint irá receber um objeto com e-mail e senha.
 
-* Caso o e-mail exista e a senha seja a mesma que a senha persistida, retornar igual ao endpoint de sign_up.
 
-* Caso o e-mail não exista, retornar erro com status apropriado mais a mensagem "Usuário e/ou senha inválidos"
+    {
 
-* Caso o e-mail exista mas a senha não esteja correta, retornar o status apropriado 401 mais a mensagem "Usuário e/ou senha inválidos"
+        "email": "string",
+        "senha": "string",
+    }
 
-Buscar usuário
+* No sucesso o retorno será o mesmo do sign-in
+
+
+# /find/:id [get]
 
 * Chamadas para este endpoint devem conter um header na requisição de Authentication com o valor "Bearer {token}" onde {token} é o valor do token passado na criação ou sign in de um usuário.
 
-* Caso o token não exista, retornar erro com status apropriado com a mensagem "Não autorizado".
+# Application
 
-* Caso o token exista, buscar o usuário pelo user_id passado no path e comparar se o token no modelo é igual ao token passado no header.
+* A aplicação está hospedada na [AWS em um EC2](http://3.137.216.170/) .
 
-* Caso não seja o mesmo token, retornar erro com status apropriado e mensagem "Não autorizado"
+* O banco está hospedado pelo [mLab](https://mlab.com/).
 
-* Caso seja o mesmo token, verificar se o último login foi a MENOS que 30 minutos atrás.
+# Docker
 
-* Caso não seja a MENOS que 30 minutos atrás, retornar erro com status apropriado com mensagem "Sessão inválida".
+O código é bem simples, e para rodar o container são necessárias apenas 2 variáveis:
 
-* Caso tudo esteja ok, retornar o usuário.
+ACCESS_TOKEN_SECRET = seu secret para o JWT
 
-Requisitos
-
-* persistência de dados
-
-* Sistema de build gestão de dependências via gerenciador de pacotes
-
-* Utilizar um task runner para realização de build
-
-* Padronização de estilo de código em tempo de build - sugestão: jsHint/jsLint
-
-* API: Express, Hapi ou similares.
-
-Requisitos desejáveis
-
-* JWT como token
-
-* Testes unitários
-
-* Criptografia não reversível (hash) na senha e no token
-
-Submissão
-
-* O desafio deve ser entregue pelo GitHub.
-
-* A aplicação deve estar hospedada (Heroku, Google Cloud, AWS, ou serviço similar)
-
-* As URLs deve ser enviada por email.
-
-Prazo
-
-* Uma semana
-
-# CRITÉRIOS DE AVALIAÇÃO
-
-* Organização do projeto
-
-## Avalia a estrutura do projeto, documentação e uso de controle de versão;
-
-* Inovação tecnológica
-
-## Avalia o uso de tecnologias mais recentes, desde que estáveis;
-
-* Coerência
-
-## Avalia se os requisitos foram atendidos;
-
-* Boas práticas
-
-## Avalia se o projeto segue boas práticas de desenvolvimento, incluindo segurança e otimização;
-
-* Controle de Qualidade
-
-## Avalia se o projeto possui qualidade assegurada por testes automatizados (por exemplo Jasmine)
+MONGO = String inteira de conexão para o mongo. 
